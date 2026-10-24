@@ -1,6 +1,11 @@
 #!/bin/bash
-# sijaOS Winbox Launcher for MikroTik (Offline Ready)
+# sijaOS Winbox Launcher for MikroTik (Offline & Fast Boot Ready)
 set -e
+
+# Disable noisy debug logs and skip unnecessary Mono/Gecko install prompts
+export WINEDEBUG=-all
+export WINEDLLOVERRIDES="mscoree,mshtml="
+export WINEARCH=win64
 
 SYSTEM_WINBOX="/usr/local/share/winbox/winbox64.exe"
 USER_WINBOX="$HOME/.local/share/winbox/winbox64.exe"
