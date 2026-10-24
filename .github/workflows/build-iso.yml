@@ -31,7 +31,7 @@ jobs:
             export DEBIAN_FRONTEND=noninteractive
             echo "=== Menginstall build tools di container Debian Bookworm ==="
             apt-get update
-            apt-get install -y live-build live-boot live-config debootstrap xorriso squashfs-tools zstd curl ca-certificates
+            apt-get install -y live-build live-boot live-config debootstrap xorriso squashfs-tools xz-utils zstd curl ca-certificates
 
             echo "=== Membersihkan cache build lama ==="
             lb clean --purge || true
@@ -44,7 +44,7 @@ jobs:
             echo "=== Konfigurasi live-build ==="
             lb config
 
-            echo "=== Memulai Build ISO sijaOS ==="
+            echo "=== Memulai Build ISO sijaOS (Kompresi XZ Maksimal) ==="
             lb build
 
             echo "=== Hasil Build Selesai ==="
@@ -56,6 +56,7 @@ jobs:
         run: |
           sha256sum sijaOS-amd64.iso > sijaOS-amd64.iso.sha256
           cat sijaOS-amd64.iso.sha256
+          ls -lh sijaOS-amd64.iso
 
       - name: Upload ISO Artifact
         uses: actions/upload-artifact@v4
@@ -64,34 +65,18 @@ jobs:
           path: sijaOS-amd64.iso
           retention-days: 7
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
-        with:
-          files: |
-            sijaOS-amd64.iso
-            sijaOS-amd64.iso.sha256
-          tag_name: latest
-          name: "sijaOS - Network Practice Edition (Latest)"
-          draft: false
-          prerelease: false
-          body: |
-            # 🚀 sijaOS Live ISO (Network Practice Edition)
-            OS ringan berbasis **Debian 12 (Bookworm)** yang dirancang khusus untuk client praktek jaringan komputer & MikroTik di Oracle VM VirtualBox.
-
-            ### 📦 Spesifikasi & Fitur:
-            - **Base**: Debian 12 (Bookworm) 64-bit (Stable)
-            - **Desktop**: LXQt (Sangat ringan, konsumsi RAM idle hanya ~200 MB)
-            - **Sistem & IPC**: DBus terpasang dan aktif penuh (`dbus`, `dbus-user-session`)
-            - **Alat Jaringan Lengkap**: NetworkManager GUI, Wireshark, Nmap, Traceroute, Ping, Net-tools, Dhcp-client, Iperf3
-            - **Web Browser**: Firefox ESR (Bisa login captive portal Hotspot & buka WebFig)
-            - **MikroTik Winbox**: Sudah terpasang shortcut Winbox (Wine) langsung di Desktop
-            - **User Live**: `sija` (Password sudo bebas tanpa sandi)
-
-            ### 💻 Cara Pakai di VirtualBox:
-            1. Buka VirtualBox ➔ **New Virtual Machine**.
-            2. Berikan RAM **512 MB** atau **1024 MB** (sangat enteng).
-            3. Masukkan file `sijaOS-amd64.iso` sebagai CD/DVD boot.
-            4. Klik **Start** ➔ Pilih Live Boot ➔ Langsung masuk Desktop!
+      - name: Publish or Update GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Mengunggah release asset menggunakan GitHub CLI..."
+          gh release upload latest sijaOS-amd64.iso sijaOS-amd64.iso.sha256 --clobber --repo ${{ github.repository }} || \
+          gh release create latest sijaOS-amd64.iso sijaOS-amd64.iso.sha256 \
+            --title "sijaOS - Network Practice Edition (Latest)" \
+            --notes "## 🚀 sijaOS Live ISO (Network Practice Edition)
+          OS ringan berbasis **Debian 12 (Bookworm)** yang dirancang khusus untuk client praktek jaringan komputer & MikroTik di Oracle VM VirtualBox.
+          - **Desktop**: LXQt (Sangat ringan, konsumsi RAM idle hanya ~200 MB)
+          - **Offline Ready**: Winbox sudah tertanam di dalam ISO, langsung buka tanpa internet
+          - **Lengkap**: Wireshark, Nmap, PuTTY, FileZilla, Geany, MAC-Telnet, Net-tools, Firefox
+          - **Multi-Device**: Mendukung semua prosesor 64-bit Intel & AMD serta VirtualBox" \
+            --repo ${{ github.repository }}

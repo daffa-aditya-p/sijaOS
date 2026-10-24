@@ -8,6 +8,7 @@ lb config noauto \
     --archive-areas "main contrib non-free non-free-firmware" \
     --binary-images iso-hybrid \
     --memtest none \
+    --chroot-squashfs-compression-type xz \
     --iso-application "sijaOS Network Practice Edition" \
     --iso-publisher "sijaOS" \
     --iso-volume "sijaOS" \

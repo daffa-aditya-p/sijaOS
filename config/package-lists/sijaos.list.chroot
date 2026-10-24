@@ -1,7 +1,6 @@
 # ==========================================================
-# sijaOS Live ISO Package List
+# sijaOS Live ISO Package List (Optimized & Slimmed)
 # Base: Debian 12 (Bookworm) 64-bit
-# Compatible: All 64-bit x86 Devices (Intel, AMD, VMs)
 # ==========================================================
 
 # Kernel & Live Boot System
@@ -10,8 +9,7 @@ live-boot
 live-config
 live-config-systemd
 
-# Universal Hardware Firmware & Drivers (All Devices: Intel, AMD, Realtek)
-firmware-linux
+# Universal Hardware Firmware & Drivers (Intel, AMD, Realtek)
 firmware-linux-free
 firmware-realtek
 firmware-iwlwifi
@@ -20,8 +18,7 @@ firmware-amd-graphics
 xserver-xorg-video-all
 xserver-xorg-input-all
 
-# Desktop Environment (LXQt Lightweight & Aesthetic)
-task-lxqt-desktop
+# Desktop Environment (LXQt Lightweight - No Bloat/No LibreOffice)
 lxqt-core
 openbox
 pcmanfm-qt
