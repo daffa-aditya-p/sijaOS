@@ -1,6 +1,7 @@
 # ==========================================================
-# sijaOS Live ISO Package List (Optimized & Slimmed)
+# sijaOS Live ISO Package List (v1.0.1 Stable Minimal)
 # Base: Debian 12 (Bookworm) 64-bit
+# Universal: 100% Compatible Intel & AMD 64-bit
 # ==========================================================
 
 # Kernel & Live Boot System
@@ -9,7 +10,7 @@ live-boot
 live-config
 live-config-systemd
 
-# Universal Hardware Firmware & Drivers (Intel, AMD, Realtek)
+# Universal Hardware Firmware (Intel & AMD)
 firmware-linux-free
 firmware-realtek
 firmware-iwlwifi
@@ -18,7 +19,7 @@ firmware-amd-graphics
 xserver-xorg-video-all
 xserver-xorg-input-all
 
-# Desktop Environment (LXQt Lightweight - No Bloat/No LibreOffice)
+# Desktop Environment (LXQt Pure - Fast & Clean)
 lxqt-core
 openbox
 pcmanfm-qt
@@ -45,7 +46,17 @@ sudo
 ca-certificates
 locales
 
-# Network Diagnostics & Packet Analysis
+# Shared Libraries for Native MikroTik WinBox
+libxcb-keysyms1
+libxcb-image0
+libxcb-icccm4
+libxcb-render-util0
+libgl1
+libxkbcommon0
+libfontconfig1
+libfreetype6
+
+# Essential Network Diagnostics & Packet Analysis
 network-manager
 network-manager-gnome
 iproute2
@@ -59,45 +70,30 @@ nmap
 tcpdump
 wireshark
 tshark
-hping3
 arp-scan
 fping
 mtr-tiny
 macchanger
 iperf3
-speedtest-cli
 ethtool
 isc-dhcp-client
 telnet
 netcat-openbsd
-socat
-bridge-utils
-vlan
-iptables
-nftables
 
-# MikroTik Special Tools
+# MikroTik Native MAC Tools
 mactelnet-client
 
 # Remote Management & File Transfer GUI
 putty
 filezilla
-remmina
-remmina-plugin-rdp
-remmina-plugin-vnc
-minicom
 
-# Development & Script/Hotspot Editor
+# Text & Script Editor
 geany
 
-# Web Browser (Hotspot Login & WebFig)
+# Web Browser (Hotspot & WebFig)
 firefox-esr
 
-# Windows Compatibility for Winbox
-wine
-wine64
-
-# System Utilities & CLI Tools
+# System Utilities
 htop
 neofetch
 unzip

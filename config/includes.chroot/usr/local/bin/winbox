@@ -1,28 +1,12 @@
 #!/bin/bash
-# sijaOS Winbox Launcher for MikroTik (Offline & Fast Boot Ready)
+# sijaOS Native MikroTik WinBox Launcher
 set -e
 
-# Disable noisy debug logs and skip unnecessary Mono/Gecko install prompts
-export WINEDEBUG=-all
-export WINEDLLOVERRIDES="mscoree,mshtml="
-export WINEARCH=win64
-
-SYSTEM_WINBOX="/usr/local/share/winbox/winbox64.exe"
-USER_WINBOX="$HOME/.local/share/winbox/winbox64.exe"
-
-if [ -f "$SYSTEM_WINBOX" ]; then
-    TARGET_BIN="$SYSTEM_WINBOX"
-elif [ -f "$USER_WINBOX" ]; then
-    TARGET_BIN="$USER_WINBOX"
+if [ -x /usr/local/bin/WinBox ]; then
+    exec /usr/local/bin/WinBox "$@"
+elif [ -x /usr/bin/WinBox ]; then
+    exec /usr/bin/WinBox "$@"
 else
-    mkdir -p "$HOME/.local/share/winbox"
-    curl -f -k -L -o "$USER_WINBOX" "https://download.mikrotik.com/routeros/winbox/3.41/winbox64.exe" || true
-    TARGET_BIN="$USER_WINBOX"
-fi
-
-if [ -f "$TARGET_BIN" ]; then
-    wine64 "$TARGET_BIN" "$@" 2>/dev/null || wine "$TARGET_BIN" "$@" 2>/dev/null
-else
-    echo "Winbox binary not found!"
+    echo "WinBox binary not found!"
     exit 1
 fi

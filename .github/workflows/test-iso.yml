@@ -28,9 +28,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Downloading sijaOS-amd64.iso from latest release..."
-          gh release download latest -p "sijaOS-amd64.iso" --repo ${{ github.repository }}
-          ls -lh sijaOS-amd64.iso
+          echo "Downloading sijaOS ISO from release..."
+          gh release download v1.0.1 -p "*.iso" --repo ${{ github.repository }} || \
+          gh release download latest -p "*.iso" --repo ${{ github.repository }}
+          mv *.iso sijaOS.iso
+          ls -lh sijaOS.iso
 
       - name: Setup noVNC and Cloudflare Tunnel
         run: |
@@ -50,7 +52,7 @@ jobs:
           qemu-system-x86_64 \
             -m 1536 \
             -smp 2 \
-            -cdrom sijaOS-amd64.iso \
+            -cdrom sijaOS.iso \
             -boot d \
             -vga std \
             -vnc :1 \

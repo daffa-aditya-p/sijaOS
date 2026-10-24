@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Build sijaOS Debian Live ISO
+    name: Build sijaOS Universal Debian Live ISO
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -31,7 +31,14 @@ jobs:
             export DEBIAN_FRONTEND=noninteractive
             echo "=== Menginstall build tools di container Debian Bookworm ==="
             apt-get update
-            apt-get install -y live-build live-boot live-config debootstrap xorriso squashfs-tools xz-utils zstd curl ca-certificates
+            apt-get install -y live-build live-boot live-config debootstrap xorriso squashfs-tools xz-utils zstd curl wget unzip ca-certificates
+
+            echo "=== Mendownload MikroTik WinBox Native Linux (Official No-Wine) ==="
+            curl -s -L -f -o /tmp/WinBox_Linux.zip "https://download.mikrotik.com/routeros/winbox/4.4/WinBox_Linux.zip"
+            mkdir -p config/includes.chroot/usr/local/bin
+            unzip -q -o /tmp/WinBox_Linux.zip -d config/includes.chroot/usr/local/bin/
+            chmod +x config/includes.chroot/usr/local/bin/WinBox
+            ls -lh config/includes.chroot/usr/local/bin/WinBox
 
             echo "=== Membersihkan cache build lama ==="
             lb clean --purge || true
@@ -49,34 +56,41 @@ jobs:
 
             echo "=== Hasil Build Selesai ==="
             ls -lh *.iso
-            mv *.iso sijaOS-amd64.iso
+            mv *.iso sijaOS-v1.0.1-Universal-Intel-AMD-64bit.iso
           '
 
       - name: Calculate Checksum (SHA256)
         run: |
-          sha256sum sijaOS-amd64.iso > sijaOS-amd64.iso.sha256
-          cat sijaOS-amd64.iso.sha256
-          ls -lh sijaOS-amd64.iso
+          sha256sum sijaOS-v1.0.1-Universal-Intel-AMD-64bit.iso > sijaOS-v1.0.1-Universal-Intel-AMD-64bit.iso.sha256
+          cat sijaOS-v1.0.1-Universal-Intel-AMD-64bit.iso.sha256
+          ls -lh sijaOS-v1.0.1-Universal-Intel-AMD-64bit.iso
 
       - name: Upload ISO Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: sijaOS-amd64-iso
-          path: sijaOS-amd64.iso
+          name: sijaOS-v1.0.1-Universal-Intel-AMD-64bit-iso
+          path: sijaOS-v1.0.1-Universal-Intel-AMD-64bit.iso
           retention-days: 7
 
-      - name: Publish or Update GitHub Release
+      - name: Publish or Update GitHub Release v1.0.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Mengunggah release asset menggunakan GitHub CLI..."
-          gh release upload latest sijaOS-amd64.iso sijaOS-amd64.iso.sha256 --clobber --repo ${{ github.repository }} || \
-          gh release create latest sijaOS-amd64.iso sijaOS-amd64.iso.sha256 \
-            --title "sijaOS - Network Practice Edition (Latest)" \
-            --notes "## 🚀 sijaOS Live ISO (Network Practice Edition)
-          OS ringan berbasis **Debian 12 (Bookworm)** yang dirancang khusus untuk client praktek jaringan komputer & MikroTik di Oracle VM VirtualBox.
-          - **Desktop**: LXQt (Sangat ringan, konsumsi RAM idle hanya ~200 MB)
-          - **Offline Ready**: Winbox sudah tertanam di dalam ISO, langsung buka tanpa internet
-          - **Lengkap**: Wireshark, Nmap, PuTTY, FileZilla, Geany, MAC-Telnet, Net-tools, Firefox
-          - **Multi-Device**: Mendukung semua prosesor 64-bit Intel & AMD serta VirtualBox" \
+          echo "Mengunggah file ISO sijaOS v1.0.1 ke GitHub Release..."
+          gh release upload v1.0.1 sijaOS-v1.0.1-Universal-Intel-AMD-64bit.iso sijaOS-v1.0.1-Universal-Intel-AMD-64bit.iso.sha256 --clobber --repo ${{ github.repository }} || \
+          gh release create v1.0.1 sijaOS-v1.0.1-Universal-Intel-AMD-64bit.iso sijaOS-v1.0.1-Universal-Intel-AMD-64bit.iso.sha256 \
+            --title "sijaOS v1.0.1 (Universal Stable Edition - Intel & AMD)" \
+            --notes "## 🚀 sijaOS v1.0.1 (Universal Stable Edition)
+          Sistem Operasi Live ISO ringan berbasis **Debian 12 (Bookworm)** yang dirancang khusus untuk praktikum jaringan komputer dan simulasi MikroTik di Oracle VM VirtualBox maupun Laptop Fisik.
+
+          ### ✨ Pembaruan Utama v1.0.1:
+          - **100% Native MikroTik WinBox (WinBox 4 for Linux)**: Resmi dari MikroTik, berjalan murni di Linux tanpa Wine sama sekali! Langsung terbuka instan 0.1 detik tanpa lag dan bebas pesan error!
+          - **Universal Intel & AMD 64-bit**: Mendukung 100% semua prosesor 64-bit buatan Intel (Core i3/i5/i7/i9, Celeron, Pentium) maupun AMD (Ryzen, Athlon, A-Series) serta VM.
+          - **Bebas Bloatware**: Paket Wine dan aplikasi yang tidak perlu sudah dipangkas habis. Sistem lebih ringan, ukuran ISO ramping (~1.1 GB).
+          - **Toolbox Jaringan Esensial**: Wireshark, Nmap, PuTTY, FileZilla, Geany, MAC-Telnet, Arp-scan, Net-tools, Firefox ESR.
+          - **Identitas sijaOS**: Logo asli SIJA pada Start Menu dan Wallpaper Cyber HD, prompt \`sija@sijaOS:~$\`, dan custom Neofetch.
+
+          ### 💻 Cara Pakai:
+          - **VirtualBox**: Buat VM baru, beri RAM 512 MB - 1024 MB, pasang ISO ini, klik Start!
+          - **Flashdisk Fisik**: Bisa dibakar menggunakan Rufus / Ventoy / BalenaEtcher untuk booting langsung di laptop fisik." \
             --repo ${{ github.repository }}

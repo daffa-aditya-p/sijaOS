@@ -1,9 +1,9 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=MikroTik Winbox
-Comment=Buka MikroTik RouterOS GUI
-Exec=/usr/local/bin/winbox
+Name=MikroTik WinBox
+Comment=Official Native MikroTik RouterOS GUI (No Wine)
+Exec=/usr/local/bin/WinBox
 Icon=/usr/share/pixmaps/sija-logo.png
 Terminal=false
 Categories=Network;
