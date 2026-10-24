@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Picom Compositor
+Exec=picom -b --backend glx --vsync
+OnlyShowIn=LXQt;
+X-LXQt-Need-Tray=false

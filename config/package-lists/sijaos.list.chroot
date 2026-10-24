@@ -4,7 +4,7 @@ live-boot
 live-config
 live-config-systemd
 
-# Desktop Environment (LXQt Lightweight)
+# Desktop Environment (LXQt Lightweight & Polished)
 task-lxqt-desktop
 lxqt-core
 openbox
@@ -13,6 +13,13 @@ qterminal
 featherpad
 lightdm
 lightdm-gtk-greeter
+
+# Themes, Icons & Aesthetics (Clean & Modern Look)
+papirus-icon-theme
+arc-theme
+picom
+fonts-roboto
+fonts-firacode
 
 # DBus & System IPC (Essential for Desktop & NetworkManager)
 dbus
