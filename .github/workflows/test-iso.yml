@@ -1,0 +1,120 @@
+name: Test sijaOS Live in Cloud
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_duration:
+        description: 'Durasi sesi test interaktif (menit)'
+        required: true
+        default: '15'
+
+jobs:
+  test-iso:
+    name: Test sijaOS in QEMU & Web Preview
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install QEMU & Networking Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-system-x86 netpbm imagemagick curl git python3-pip
+
+      - name: Download sijaOS ISO from Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Downloading sijaOS-amd64.iso from latest release..."
+          gh release download latest -p "sijaOS-amd64.iso" --repo ${{ github.repository }}
+          ls -lh sijaOS-amd64.iso
+
+      - name: Setup noVNC and Cloudflare Tunnel
+        run: |
+          echo "Setting up noVNC..."
+          git clone --depth 1 https://github.com/novnc/noVNC.git /tmp/novnc
+          git clone --depth 1 https://github.com/novnc/websockify /tmp/novnc/utils/websockify
+
+          echo "Installing Cloudflare Tunnel..."
+          curl -L -s https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o /tmp/cloudflared
+          chmod +x /tmp/cloudflared
+
+      - name: Boot sijaOS in QEMU & Launch Interactive Web Access
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Starting QEMU VM in background..."
+          qemu-system-x86_64 \
+            -m 1536 \
+            -smp 2 \
+            -cdrom sijaOS-amd64.iso \
+            -boot d \
+            -vga std \
+            -vnc :1 \
+            -qmp tcp:localhost:4444,server,nowait \
+            -daemonize
+
+          echo "Starting noVNC proxy on port 8080..."
+          /tmp/novnc/utils/novnc_proxy --vnc localhost:5901 --listen 8080 > /tmp/novnc.log 2>&1 &
+
+          echo "Launching Cloudflare Tunnel to expose Web VNC..."
+          /tmp/cloudflared tunnel --url http://localhost:8080 > /tmp/tunnel.log 2>&1 &
+
+          echo "Waiting for Cloudflare Tunnel URL..."
+          sleep 6
+          TUNNEL_URL=""
+          for i in {1..30}; do
+            TUNNEL_URL=$(grep -o 'https://[a-zA-Z0-9.-]*\.trycloudflare\.com' /tmp/tunnel.log | head -n 1 || true)
+            if [ -n "$TUNNEL_URL" ]; then
+              break
+            fi
+            sleep 2
+          done
+
+          WEB_URL="$TUNNEL_URL/vnc.html?autoconnect=true&resize=remote"
+          echo "=========================================================="
+          echo "🌐 LINK TES INTERAKTIF SIJAOS SIAP:"
+          echo "$WEB_URL"
+          echo "=========================================================="
+
+          # Simpan ke GitHub Actions Step Summary
+          echo "## 🚀 Link Tes Langsung sijaOS di Browser:" >> $GITHUB_STEP_SUMMARY
+          echo "[KLIK DI SINI UNTUK MEMBUKA sijaOS DI BROWSER]($WEB_URL)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Sesi ini akan aktif selama ${{ github.event.inputs.test_duration }} menit." >> $GITHUB_STEP_SUMMARY
+
+          # Tunggu booting selesai untuk screenshot otomatis
+          echo "Menunggu OS booting masuk desktop (~45 detik)..."
+          sleep 45
+
+          # Ambil screenshot desktop via QMP
+          python3 -c '
+          import socket, time
+          try:
+              s = socket.socket()
+              s.connect(("localhost", 4444))
+              s.recv(1024)
+              s.send(b"{\"execute\": \"qmp_capabilities\"}\n")
+              s.recv(1024)
+              s.send(b"{\"execute\": \"screendump\", \"arguments\": {\"filename\": \"/tmp/screenshot.ppm\"}}\n")
+              time.sleep(2)
+              s.close()
+          except Exception as e:
+              print("QMP screenshot error:", e)
+          ' || true
+
+          if [ -f /tmp/screenshot.ppm ]; then
+              pnmtopng /tmp/screenshot.ppm > desktop-preview.png || convert /tmp/screenshot.ppm desktop-preview.png || true
+              if [ -f desktop-preview.png ]; then
+                  echo "Screenshot desktop berhasil diambil!"
+                  gh release upload latest desktop-preview.png --clobber --repo ${{ github.repository }} || true
+              fi
+          fi
+
+          echo "Sesi interaktif berjalan selama ${{ github.event.inputs.test_duration }} menit..."
+          DURATION_SEC=$((${{ github.event.inputs.test_duration }} * 60))
+          sleep $DURATION_SEC
+          echo "Sesi uji coba selesai."
