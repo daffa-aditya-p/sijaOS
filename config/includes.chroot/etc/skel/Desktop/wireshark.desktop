@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Wireshark Network Analyzer
+Comment=Analisis Paket Jaringan
+Exec=wireshark %f
+Icon=wireshark
+Terminal=false
+Categories=Network;

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=MikroTik Winbox
+Comment=Buka MikroTik RouterOS GUI
+Exec=/usr/local/bin/winbox
+Icon=network-wired
+Terminal=true
+Categories=Network;

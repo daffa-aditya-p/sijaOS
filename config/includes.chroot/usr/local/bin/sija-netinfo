@@ -1,0 +1,21 @@
+#!/bin/bash
+clear
+echo "======================================================"
+echo "         sijaOS - Status Jaringan Client              "
+echo "======================================================"
+echo ""
+echo "[1] IP Address Terpasang:"
+ip -br a | grep -v "lo" || echo "Belum ada IP address"
+echo ""
+echo "[2] Gateway / Router Default:"
+ip r | grep default || echo "Belum terhubung ke Router / Gateway"
+echo ""
+echo "[3] DNS Server (Resolv):"
+cat /etc/resolv.conf 2>/dev/null | grep nameserver || echo "Belum ada DNS"
+echo ""
+echo "[4] Tes Ping ke Default IP MikroTik (192.168.88.1):"
+ping -c 3 192.168.88.1 2>&1
+echo ""
+echo "======================================================"
+echo "Tekan [ENTER] untuk menutup jendela ini..."
+read -r

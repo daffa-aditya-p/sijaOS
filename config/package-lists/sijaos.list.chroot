@@ -1,0 +1,61 @@
+# Kernel and Live System Core
+linux-image-amd64
+live-boot
+live-config
+live-config-systemd
+
+# Desktop Environment (LXQt Lightweight)
+task-lxqt-desktop
+lxqt-core
+openbox
+pcmanfm-qt
+qterminal
+featherpad
+lightdm
+lightdm-gtk-greeter
+
+# DBus & System IPC (Essential for Desktop & NetworkManager)
+dbus
+dbus-x11
+dbus-user-session
+polkitd
+policykit-1
+sudo
+ca-certificates
+locales
+
+# Network & Connectivity (Praktek TKJ & Mikrotik)
+network-manager
+network-manager-gnome
+iproute2
+net-tools
+iputils-ping
+traceroute
+dnsutils
+curl
+wget
+nmap
+tcpdump
+wireshark
+tshark
+iptables
+nftables
+ethtool
+isc-dhcp-client
+telnet
+iperf3
+
+# Web Browser (Hotspot Login & WebFig Mikrotik)
+firefox-esr
+
+# Windows Compatibility for Winbox
+wine
+wine64
+
+# Utilities & System Monitoring
+htop
+neofetch
+unzip
+tar
+pciutils
+usbutils

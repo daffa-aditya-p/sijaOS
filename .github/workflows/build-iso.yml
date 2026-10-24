@@ -1,0 +1,97 @@
+name: Build sijaOS Live ISO
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build sijaOS Debian Live ISO
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Free Disk Space on Runner
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          df -h
+
+      - name: Build sijaOS via Debian Bookworm Container
+        run: |
+          docker run --privileged --rm -v $(pwd):/workspace -w /workspace debian:bookworm bash -c '
+            set -e
+            export DEBIAN_FRONTEND=noninteractive
+            echo "=== Menginstall build tools di container Debian Bookworm ==="
+            apt-get update
+            apt-get install -y live-build live-boot live-config debootstrap xorriso squashfs-tools zstd curl ca-certificates
+
+            echo "=== Membersihkan cache build lama ==="
+            lb clean --purge || true
+
+            echo "=== Menyetel perizinan script ==="
+            chmod +x auto/*
+            chmod +x config/includes.chroot/usr/local/bin/*
+            chmod +x config/includes.chroot/etc/skel/Desktop/*.desktop
+
+            echo "=== Konfigurasi live-build ==="
+            lb config
+
+            echo "=== Memulai Build ISO sijaOS ==="
+            lb build
+
+            echo "=== Hasil Build Selesai ==="
+            ls -lh *.iso
+            mv *.iso sijaOS-amd64.iso
+          '
+
+      - name: Calculate Checksum (SHA256)
+        run: |
+          sha256sum sijaOS-amd64.iso > sijaOS-amd64.iso.sha256
+          cat sijaOS-amd64.iso.sha256
+
+      - name: Upload ISO Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sijaOS-amd64-iso
+          path: sijaOS-amd64.iso
+          retention-days: 7
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
+        with:
+          files: |
+            sijaOS-amd64.iso
+            sijaOS-amd64.iso.sha256
+          tag_name: latest
+          name: "sijaOS - Network Practice Edition (Latest)"
+          draft: false
+          prerelease: false
+          body: |
+            # 🚀 sijaOS Live ISO (Network Practice Edition)
+            OS ringan berbasis **Debian 12 (Bookworm)** yang dirancang khusus untuk client praktek jaringan komputer & MikroTik di Oracle VM VirtualBox.
+
+            ### 📦 Spesifikasi & Fitur:
+            - **Base**: Debian 12 (Bookworm) 64-bit (Stable)
+            - **Desktop**: LXQt (Sangat ringan, konsumsi RAM idle hanya ~200 MB)
+            - **Sistem & IPC**: DBus terpasang dan aktif penuh (`dbus`, `dbus-user-session`)
+            - **Alat Jaringan Lengkap**: NetworkManager GUI, Wireshark, Nmap, Traceroute, Ping, Net-tools, Dhcp-client, Iperf3
+            - **Web Browser**: Firefox ESR (Bisa login captive portal Hotspot & buka WebFig)
+            - **MikroTik Winbox**: Sudah terpasang shortcut Winbox (Wine) langsung di Desktop
+            - **User Live**: `sija` (Password sudo bebas tanpa sandi)
+
+            ### 💻 Cara Pakai di VirtualBox:
+            1. Buka VirtualBox ➔ **New Virtual Machine**.
+            2. Berikan RAM **512 MB** atau **1024 MB** (sangat enteng).
+            3. Masukkan file `sijaOS-amd64.iso` sebagai CD/DVD boot.
+            4. Klik **Start** ➔ Pilih Live Boot ➔ Langsung masuk Desktop!
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

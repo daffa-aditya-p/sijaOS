@@ -1,0 +1,22 @@
+#!/bin/bash
+# sijaOS Winbox Launcher for MikroTik
+set -e
+
+WINBOX_DIR="$HOME/.local/share/winbox"
+WINBOX_BIN="$WINBOX_DIR/winbox64.exe"
+
+mkdir -p "$WINBOX_DIR"
+
+if [ ! -f "$WINBOX_BIN" ]; then
+    echo "Downloading MikroTik Winbox..."
+    # Download latest Winbox from official MikroTik mirror
+    curl -f -k -L -o "$WINBOX_BIN" "https://download.mikrotik.com/routeros/winbox/3.41/winbox64.exe" || \
+    wget --no-check-certificate -O "$WINBOX_BIN" "https://download.mikrotik.com/routeros/winbox/3.41/winbox64.exe"
+fi
+
+if [ -f "$WINBOX_BIN" ]; then
+    wine64 "$WINBOX_BIN" "$@" || wine "$WINBOX_BIN" "$@"
+else
+    echo "Gagal mendownload Winbox. Pastikan koneksi internet aktif."
+    exit 1
+fi

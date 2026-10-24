@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Cek Status Jaringan
+Comment=Cek IP, Gateway, dan Tes Ping ke MikroTik
+Exec=qterminal -e /usr/local/bin/sija-netinfo
+Icon=preferences-system-network
+Terminal=false
+Categories=Network;

@@ -1,0 +1,15 @@
+#!/bin/sh
+set -e
+
+lb config noauto \
+    --mode debian \
+    --distribution bookworm \
+    --architectures amd64 \
+    --archive-areas "main contrib non-free non-free-firmware" \
+    --binary-images iso-hybrid \
+    --memtest none \
+    --iso-application "sijaOS Network Practice Edition" \
+    --iso-publisher "sijaOS" \
+    --iso-volume "sijaOS" \
+    --bootappend-live "boot=live components locales=en_US.UTF-8 keyboard-layouts=us quiet splash" \
+    "${@}"
