@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Geany Code Editor
+Comment=Edit Script MikroTik & Halaman Hotspot
+Exec=geany %F
+Icon=geany
+Terminal=false
+Categories=Development;

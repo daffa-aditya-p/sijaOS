@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=FileZilla FTP
+Comment=Transfer File Hotspot & Backup MikroTik
+Exec=filezilla
+Icon=filezilla
+Terminal=false
+Categories=Network;FileTransfer;

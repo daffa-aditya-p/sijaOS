@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=PuTTY SSH & Telnet
+Comment=Remote Console Router & Switch
+Exec=putty
+Icon=putty
+Terminal=false
+Categories=Network;

@@ -1,27 +1,44 @@
-# Kernel and Live System Core
+# ==========================================================
+# sijaOS Live ISO Package List
+# Base: Debian 12 (Bookworm) 64-bit
+# Compatible: All 64-bit x86 Devices (Intel, AMD, VMs)
+# ==========================================================
+
+# Kernel & Live Boot System
 linux-image-amd64
 live-boot
 live-config
 live-config-systemd
 
-# Desktop Environment (LXQt Lightweight & Polished)
+# Universal Hardware Firmware & Drivers (All Devices: Intel, AMD, Realtek)
+firmware-linux
+firmware-linux-free
+firmware-realtek
+firmware-iwlwifi
+firmware-atheros
+firmware-amd-graphics
+xserver-xorg-video-all
+xserver-xorg-input-all
+
+# Desktop Environment (LXQt Lightweight & Aesthetic)
 task-lxqt-desktop
 lxqt-core
 openbox
 pcmanfm-qt
 qterminal
+xterm
 featherpad
 lightdm
 lightdm-gtk-greeter
 
-# Themes, Icons & Aesthetics (Clean & Modern Look)
+# Themes, Icons & Aesthetics
 papirus-icon-theme
 arc-theme
 picom
 fonts-roboto
 fonts-firacode
 
-# DBus & System IPC (Essential for Desktop & NetworkManager)
+# DBus & System IPC
 dbus
 dbus-x11
 dbus-user-session
@@ -31,7 +48,7 @@ sudo
 ca-certificates
 locales
 
-# Network & Connectivity (Praktek TKJ & Mikrotik)
+# Network Diagnostics & Packet Analysis
 network-manager
 network-manager-gnome
 iproute2
@@ -45,24 +62,49 @@ nmap
 tcpdump
 wireshark
 tshark
-iptables
-nftables
+hping3
+arp-scan
+fping
+mtr-tiny
+macchanger
+iperf3
+speedtest-cli
 ethtool
 isc-dhcp-client
 telnet
-iperf3
+netcat-openbsd
+socat
+bridge-utils
+vlan
+iptables
+nftables
 
-# Web Browser (Hotspot Login & WebFig Mikrotik)
+# MikroTik Special Tools
+mactelnet-client
+
+# Remote Management & File Transfer GUI
+putty
+filezilla
+remmina
+remmina-plugin-rdp
+remmina-plugin-vnc
+minicom
+
+# Development & Script/Hotspot Editor
+geany
+
+# Web Browser (Hotspot Login & WebFig)
 firefox-esr
 
 # Windows Compatibility for Winbox
 wine
 wine64
 
-# Utilities & System Monitoring
+# System Utilities & CLI Tools
 htop
 neofetch
 unzip
 tar
+zip
 pciutils
 usbutils

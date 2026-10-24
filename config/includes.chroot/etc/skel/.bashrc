@@ -12,8 +12,8 @@ shopt -s histappend
 HISTSIZE=1000
 HISTFILESIZE=2000
 
-# Color prompt
-PS1='\[\033[01;32m\]\u@sijaOS\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+# Color prompt: sija@sijaOS:~$
+PS1='\[\033[01;36m\]\u@sijaOS\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 
 # Aliases
 alias ll='ls -alF --color=auto'
@@ -26,5 +26,9 @@ alias netinfo='sija-netinfo'
 
 # Welcome screen
 if [ -t 1 ] && [ -x /usr/bin/neofetch ]; then
-    neofetch
+    if [ -f "$HOME/.config/neofetch/sijaos.ascii" ]; then
+        neofetch --ascii "$HOME/.config/neofetch/sijaos.ascii" --ascii_colors 6 4 7 1
+    else
+        neofetch
+    fi
 fi

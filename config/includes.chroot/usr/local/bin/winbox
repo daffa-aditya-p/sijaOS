@@ -1,22 +1,23 @@
 #!/bin/bash
-# sijaOS Winbox Launcher for MikroTik
+# sijaOS Winbox Launcher for MikroTik (Offline Ready)
 set -e
 
-WINBOX_DIR="$HOME/.local/share/winbox"
-WINBOX_BIN="$WINBOX_DIR/winbox64.exe"
+SYSTEM_WINBOX="/usr/local/share/winbox/winbox64.exe"
+USER_WINBOX="$HOME/.local/share/winbox/winbox64.exe"
 
-mkdir -p "$WINBOX_DIR"
-
-if [ ! -f "$WINBOX_BIN" ]; then
-    echo "Downloading MikroTik Winbox..."
-    # Download latest Winbox from official MikroTik mirror
-    curl -f -k -L -o "$WINBOX_BIN" "https://download.mikrotik.com/routeros/winbox/3.41/winbox64.exe" || \
-    wget --no-check-certificate -O "$WINBOX_BIN" "https://download.mikrotik.com/routeros/winbox/3.41/winbox64.exe"
+if [ -f "$SYSTEM_WINBOX" ]; then
+    TARGET_BIN="$SYSTEM_WINBOX"
+elif [ -f "$USER_WINBOX" ]; then
+    TARGET_BIN="$USER_WINBOX"
+else
+    mkdir -p "$HOME/.local/share/winbox"
+    curl -f -k -L -o "$USER_WINBOX" "https://download.mikrotik.com/routeros/winbox/3.41/winbox64.exe" || true
+    TARGET_BIN="$USER_WINBOX"
 fi
 
-if [ -f "$WINBOX_BIN" ]; then
-    wine64 "$WINBOX_BIN" "$@" || wine "$WINBOX_BIN" "$@"
+if [ -f "$TARGET_BIN" ]; then
+    wine64 "$TARGET_BIN" "$@" 2>/dev/null || wine "$TARGET_BIN" "$@" 2>/dev/null
 else
-    echo "Gagal mendownload Winbox. Pastikan koneksi internet aktif."
+    echo "Winbox binary not found!"
     exit 1
 fi
